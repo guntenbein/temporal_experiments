@@ -1,4 +1,4 @@
-package ctxpropagation
+package context
 
 import (
 	"context"

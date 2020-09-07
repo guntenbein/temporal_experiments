@@ -1,7 +1,8 @@
 package temporal_experiments
 
 const (
-	QueueName = "moving_units"
+	QueueName     = "moving_units"
+	CorrelationID = "correlationID"
 )
 
 type InternalServerError struct{}

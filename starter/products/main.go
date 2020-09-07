@@ -19,7 +19,8 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: temporal_experiments.QueueName,
 	}
-	ctx := context.Background()
+	// todo complete passing context
+	ctx := context.WithValue(context.Background(), temporal_experiments.CorrelationID, "yahoo!!!")
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, temporal_experiments.MoveProductsWorkflow,
 		"company_1", "channel_1", "listing_1", "correlation_id_1", "searck_key_1",
 		[]temporal_experiments.Move{{Type: "percentage", Mode: "loose", Destination: "listing_2", Value: 50}})
