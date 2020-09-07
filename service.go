@@ -90,10 +90,19 @@ func (s *MovingUnitsService) CachePackageIDs(ctx context.Context, companyID, upl
 }
 
 func (s *MovingUnitsService) MoveProducts(ctx context.Context, companyID, uploadChannelID, sourceGroupID, processID, searchKey string, moves []Move) error {
+	cancelc := make(chan struct{})
+	defer close(cancelc)
 	go func() {
 		for {
-			time.Sleep(1 * time.Second)
-			activity.RecordHeartbeat(ctx)
+			select {
+			case <-cancelc:
+				return
+			default:
+				{
+					time.Sleep(1 * time.Second)
+					activity.RecordHeartbeat(ctx)
+				}
+			}
 		}
 	}()
 	ids, err := s.caher.GetIDs(ctx, companyID, searchKey)
@@ -108,10 +117,19 @@ func (s *MovingUnitsService) MoveProducts(ctx context.Context, companyID, upload
 }
 
 func (s *MovingUnitsService) MovePackages(ctx context.Context, companyID, uploadChannelID, sourceGroupID, processID, searchKey string, moves []Move) error {
+	cancelc := make(chan struct{})
+	defer close(cancelc)
 	go func() {
 		for {
-			time.Sleep(1 * time.Second)
-			activity.RecordHeartbeat(ctx)
+			select {
+			case <-cancelc:
+				return
+			default:
+				{
+					time.Sleep(1 * time.Second)
+					activity.RecordHeartbeat(ctx)
+				}
+			}
 		}
 	}()
 	ids, err := s.caher.GetIDs(ctx, companyID, searchKey)

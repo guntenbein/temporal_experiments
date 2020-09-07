@@ -3,6 +3,7 @@ package temporal_experiments
 import (
 	"time"
 
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -15,6 +16,13 @@ func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 		StartToCloseTimeout:    time.Minute,
 		// todo complete heartbeats
 		HeartbeatTimeout: time.Second * 2,
+		// no retry (MaximumAttempts:    1)
+		RetryPolicy: &temporal.RetryPolicy{
+			InitialInterval:    time.Second,
+			BackoffCoefficient: 2.0,
+			MaximumInterval:    time.Minute,
+			MaximumAttempts:    1,
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -51,7 +59,18 @@ func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 		return err
 	}
 
-	err = workflow.ExecuteActivity(ctx, "MoveProducts", companyID, uploadChannelID, sourceGroupID, processID, searchKey, moves).Get(ctx, nil)
+	moveProductsCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		ScheduleToCloseTimeout: time.Minute * 1,
+		RetryPolicy: &temporal.RetryPolicy{
+			InitialInterval:        time.Second,
+			BackoffCoefficient:     2.0,
+			MaximumInterval:        time.Minute,
+			MaximumAttempts:        5,
+			NonRetryableErrorTypes: []string{"InternalServerError"},
+		},
+	})
+
+	err = workflow.ExecuteActivity(moveProductsCtx, "MoveProducts", companyID, uploadChannelID, sourceGroupID, processID, searchKey, moves).Get(ctx, nil)
 	if err != nil {
 		return err
 	}

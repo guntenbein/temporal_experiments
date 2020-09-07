@@ -10,6 +10,7 @@ import (
 type Units struct{}
 
 func (u Units) MoveProducts(ctx context.Context, companyID, uploadChannelID, sourceGroupID string, moves []temporal_experiments.Move, productIDs []string) (temporal_experiments.DataUpdatedScope, error) {
+	return temporal_experiments.DataUpdatedScope{}, temporal_experiments.InternalServerError{}
 	log.Println("move products", "company", companyID, "channel", uploadChannelID, "source", sourceGroupID, "moves", moves, "products", productIDs)
 	// imitate processing
 	time.Sleep(time.Second * 10)
