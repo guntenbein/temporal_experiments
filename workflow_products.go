@@ -1,6 +1,7 @@
 package temporal_experiments
 
 import (
+	"log"
 	"time"
 
 	"go.temporal.io/sdk/temporal"
@@ -9,6 +10,9 @@ import (
 
 func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sourceGroupID, processID, searchKey string, moves []Move) (err error) {
 	// todo use standard logger
+
+	value := ctx.Value(CorrelationID)
+	log.Printf("Correlation ID in-workflow: %s", value)
 
 	// todo separate local activity options should be provided
 	ao := workflow.ActivityOptions{

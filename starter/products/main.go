@@ -4,13 +4,18 @@ import (
 	"context"
 	"log"
 	"temporal_experiments"
+	localcontext "temporal_experiments/context"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/workflow"
 )
 
 func main() {
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
+		ContextPropagators: []workflow.ContextPropagator{
+			localcontext.NewStringMapPropagator([]string{temporal_experiments.CorrelationID}),
+		},
 	})
 	if err != nil {
 		panic(err)

@@ -10,7 +10,7 @@ import (
 type Units struct{}
 
 func (u Units) MoveProducts(ctx context.Context, companyID, uploadChannelID, sourceGroupID string, moves []temporal_experiments.Move, productIDs []string) (temporal_experiments.DataUpdatedScope, error) {
-	log.Println("context propagated", "correklation passed in-context", ctx.Value(temporal_experiments.CorrelationID))
+	log.Println("context propagated", "correlationId passed in-context", ctx.Value(temporal_experiments.CorrelationID))
 	return temporal_experiments.DataUpdatedScope{}, temporal_experiments.InternalServerError{}
 	/*log.Println("move products", "company", companyID, "channel", uploadChannelID, "source", sourceGroupID, "moves", moves, "products", productIDs)
 	// imitate processing
