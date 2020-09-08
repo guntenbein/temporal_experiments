@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"temporal_experiments"
+	"temporal_experiments/clients"
 	localcontext "temporal_experiments/context"
 
 	"go.temporal.io/sdk/client"
@@ -16,6 +17,7 @@ func main() {
 		ContextPropagators: []workflow.ContextPropagator{
 			localcontext.NewStringMapPropagator([]string{temporal_experiments.CorrelationID}),
 		},
+		Logger: clients.Logger{},
 	})
 	if err != nil {
 		panic(err)

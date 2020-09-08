@@ -18,6 +18,7 @@ func main() {
 		ContextPropagators: []workflow.ContextPropagator{
 			localcontext.NewStringMapPropagator([]string{temporal_experiments.CorrelationID}),
 		},
+		Logger: clients.Logger{},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)

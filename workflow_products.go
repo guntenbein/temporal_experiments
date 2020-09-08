@@ -9,8 +9,6 @@ import (
 )
 
 func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sourceGroupID, processID, searchKey string, moves []Move) (err error) {
-	// todo use standard logger
-
 	value := ctx.Value(CorrelationID)
 	log.Printf("Correlation ID in-workflow: %s", value)
 
@@ -65,6 +63,7 @@ func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 
 	moveProductsCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		ScheduleToCloseTimeout: time.Minute * 1,
+		// retry except InternalServerError from the root of the project
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:        time.Second,
 			BackoffCoefficient:     2.0,

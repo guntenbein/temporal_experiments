@@ -7,9 +7,6 @@ import (
 )
 
 func MovePackagesWorkflow(ctx workflow.Context, companyID, uploadChannelID, sourceGroupID, processID, searchKey string, moves []Move) (err error) {
-	// todo use standard logger
-
-	// todo separate local activity options should be provided
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
