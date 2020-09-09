@@ -5,8 +5,8 @@ const (
 	CorrelationID = "correlationID"
 )
 
-type InternalServerError struct{}
+type BusinessError struct{}
 
-func (ise InternalServerError) Error() string {
-	return "unexpected internal non-retryable error"
+func (ise BusinessError) Error() string {
+	return "business non-retryable error"
 }

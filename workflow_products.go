@@ -63,13 +63,13 @@ func MoveProductsWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 
 	moveProductsCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		ScheduleToCloseTimeout: time.Minute * 1,
-		// retry except InternalServerError from the root of the project
+		// retry except BusinessError from the root of the project
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:        time.Second,
 			BackoffCoefficient:     2.0,
 			MaximumInterval:        time.Minute,
 			MaximumAttempts:        5,
-			NonRetryableErrorTypes: []string{"InternalServerError"},
+			NonRetryableErrorTypes: []string{"BusinessError"},
 		},
 	})
 
