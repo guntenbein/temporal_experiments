@@ -25,7 +25,7 @@ func (u Units) MoveProducts(ctx context.Context, companyID, uploadChannelID, sou
 func (u Units) MovePackages(ctx context.Context, companyID, uploadChannelID, sourceGroupID string, moves []temporal_experiments.Move, packageIDs []string) (temporal_experiments.DataUpdatedScope, error) {
 	log.Println("move packages", "company", companyID, "channel", uploadChannelID, "source", sourceGroupID, "moves", moves, "packages", packageIDs)
 	// imitate processing
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 30)
 	return temporal_experiments.DataUpdatedScope{
 		GroupIDList:   nil,
 		PackageIDList: packageIDs,

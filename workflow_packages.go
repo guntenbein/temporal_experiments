@@ -15,48 +15,36 @@ func MovePackagesWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "MOVING PACKAGES STARTED").Get(ctx, nil)
-
+	queryResult := "MOVING PACKAGES STARTED"
+	err = workflow.SetQueryHandler(ctx, "state", func(input []byte) (string, error) {
+		return queryResult, nil
+	})
+	if err != nil {
+		return err
+	}
 	defer func() {
 		// todo process errors
 		workflow.ExecuteActivity(ctx, "UnblockScope", companyID, uploadChannelID, processID, "default").Get(ctx, nil)
-		if err != nil {
-			// todo process errors
-			workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "MOVING PACKAGES FAILED").Get(ctx, nil)
-		} else {
-			workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "MOVING PACKAGES COMPLETED").Get(ctx, nil)
-		}
+		queryResult = "MOVING PACKAGES FINISHED"
 	}()
 
 	err = workflow.ExecuteActivity(ctx, "BlockScope", companyID, uploadChannelID, processID, "default").Get(ctx, nil)
 	if err != nil {
 		return err
 	}
-
-	err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "SCOPE BLOCKED").Get(ctx, nil)
-	if err != nil {
-		return err
-	}
+	queryResult = "SCOPE BLOCKED"
 
 	err = workflow.ExecuteActivity(ctx, "CacheProductIDs", companyID, uploadChannelID, searchKey, processID).Get(ctx, nil)
 	if err != nil {
 		return err
 	}
-
-	err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "IDS CACHED").Get(ctx, nil)
-	if err != nil {
-		return err
-	}
+	queryResult = "IDS CACHED"
 
 	err = workflow.ExecuteActivity(ctx, "MovePackages", companyID, uploadChannelID, sourceGroupID, processID, searchKey, moves).Get(ctx, nil)
 	if err != nil {
 		return err
 	}
-
-	err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "PRODUCTS MOVED").Get(ctx, nil)
-	if err != nil {
-		return err
-	}
+	queryResult = "PRODUCTS MOVED"
 
 	futureIndexSearch, settableIndexSearch := workflow.NewFuture(ctx)
 	workflow.Go(ctx, func(ctx workflow.Context) {
@@ -65,11 +53,12 @@ func MovePackagesWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 			settableIndexSearch.SetError(err)
 			return
 		}
-		err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "SEARCH INDEX COMPLETED").Get(ctx, nil)
-		if err != nil {
-			settableIndexSearch.SetError(err)
-			return
-		}
+		// todo what is the queryResult here?
+		//err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "SEARCH INDEX COMPLETED").Get(ctx, nil)
+		//if err != nil {
+		//	settableIndexSearch.SetError(err)
+		//	return
+		//}
 		// need to do this in order to finish the branch
 		settableIndexSearch.SetValue(nil)
 	})
@@ -81,11 +70,12 @@ func MovePackagesWorkflow(ctx workflow.Context, companyID, uploadChannelID, sour
 			settableSyncListings.SetError(err)
 			return
 		}
-		err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "SYNC LISTINGS COMPLETED").Get(ctx, nil)
-		if err != nil {
-			settableSyncListings.SetError(err)
-			return
-		}
+		// todo what is the queryResult here?
+		//err = workflow.ExecuteActivity(ctx, "NotifyState", companyID, processID, "SYNC LISTINGS COMPLETED").Get(ctx, nil)
+		//if err != nil {
+		//	settableSyncListings.SetError(err)
+		//	return
+		//}
 		// need to do this in order to finish the branch
 		settableSyncListings.SetValue(nil)
 	})

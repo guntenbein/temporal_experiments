@@ -25,6 +25,7 @@ func main() {
 	defer c.Close()
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: temporal_experiments.QueueName,
+		ID:        temporal_experiments.CorrelationID,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, temporal_experiments.MovePackagesWorkflow,

@@ -1,8 +1,9 @@
 package temporal_experiments
 
 const (
-	QueueName     = "moving_units"
-	CorrelationID = "correlationID"
+	QueueName      = "moving_units"
+	CorrelationID  = "correlationID"
+	QueryTypeState = "state"
 )
 
 type BusinessError struct{}
